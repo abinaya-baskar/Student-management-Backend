@@ -1,0 +1,56 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// model Student{
+//   roll_no String @unique @id 
+//   name    String
+//   class   String
+//   dob     String
+//   age     String 
+
+// }
+
+//steps: 
+// 1.Take the primary key from main table
+// 2. Making relationship
+// 3.Take the primary key from secondary table
+
+model Student {
+  roll_no   String @unique @default(cuid())
+  name      String
+  class     String
+  sec       String
+  blood_grp String
+
+  studentProof StudentProof? // 1to 1
+  student_fee  Student_fee[]
+}
+
+model StudentProof {
+  StudentProof_id String    @id @default(uuid())
+  proof_type      ProofType
+  proof_url       String
+
+  roll_no String  @unique
+  student Student @relation(fields: [roll_no], references: [roll_no])
+}
+
+enum ProofType {
+  PANCARD
+  BIRTHCERTIFICATE
+}
+
+model Student_fee {
+  Student_fee_id String @id
+  amount         Int
+  payment_id     String
+
+  roll_no String
+  student Student @relation(fields: [roll_no], references: [roll_no])
+}
